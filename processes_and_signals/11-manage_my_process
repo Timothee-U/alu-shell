@@ -1,35 +1,28 @@
 #!/usr/bin/env bash
-# manage_my_process: Manages the manage_my_process
-
-PID_FILE="/var/run/my_process.pid"
-PROCESS="/alu-shell/processes_and_signals/manage_my_process"
-PROCESS_NAME="manage_my_process"  # Explicitly setting the process name
-
-case "$1" in
-    start)
-        nohup "$PROCESS" & echo $! > "$PID_FILE"
-        echo "$PROCESS_NAME started"
-        ;;
-    stop)
-        if [ -f "$PID_FILE" ]; then
-            PID=$(cat "$PID_FILE")
-            if [ -n "$PID" ] && kill "$PID"; then
-                rm -f "$PID_FILE"
-                echo "$PROCESS_NAME stopped"
-            else
-                echo "Failed to stop $PROCESS_NAME"
-            fi
-        else
-            echo "No process found"
-        fi
-        ;;
-    restart)
-        $0 stop
-        $0 start
-        echo "$PROCESS_NAME restarted"
-        ;;
-    *)
-        echo "Usage: manage_my_process {start|stop|restart}"
-        exit 1
-        ;;
-esac
+#manage_my_process
+if [[ "$#" == "1" ]]; then
+  if [[ "$1" == "start" ]]; then
+    ./manage_my_process &
+    echo "$!" > /var/run/my_process.pid
+    echo "manage_my_process started"
+  elif [[ "$1" == "stop" ]]; then
+    if test -f "/var/run/my_process.pid"; then
+      kill "$(cat /var/run/my_process.pid)"
+    fi
+    rm /var/run/my_process.pid
+    echo "manage_my_process stopped"
+  elif [[ "$1" == "restart" ]]; then
+    # stop program
+    if test -f "/var/run/my_process.pid"; then
+      kill "$(cat /var/run/my_process.pid)"
+    fi
+    # start program
+    ./manage_my_process &
+    echo "$!" > /var/run/my_process.pid
+    echo "manage_my_process restarted"
+  else
+    echo "Usage: manage_my_process {start|stop|restart}"
+  fi
+else
+  echo "Usage: manage_my_process {start|stop|restart}"
+fi
