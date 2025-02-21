@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+# 11-manage_my_process: Manages manage_my_process
 
 PID_FILE="/var/run/my_process.pid"
-PROCESS="/alu-shell/processes_and_signals/manage_my_process"
+PROCESS="/path/to/manage_my_process"
 
 case "$1" in
     start)
@@ -26,3 +27,4 @@ case "$1" in
         exit 1
         ;;
 esac
+
